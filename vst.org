@@ -376,6 +376,48 @@ Técnica:
 [[file:figs/aranjuezOuterStrips.pdf]]
 
 
+* Gráficos Interactivos
+** rCharts
+
+*** rCharts
+ 
+#+begin_src R
+library(rCharts)
+library(zoo)
+library(lattice)
+
+load('data/aranjuez.RData')
+#+end_src
+
+*** Highcharts
+
+#+begin_src R
+aranjuezDF <- as.data.frame(aranjuez)
+aranjuezDF$tt <- as.numeric(as.POSIXct(index(aranjuez)))*1000
+hp <- hPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
+hp$xAxis(type = 'datetime')
+hp
+#+end_src
+
+*** Rickshaw
+NO FUNCIONA :-(
+#+begin_src R
+rp <- rPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
+rp$set(slider = TRUE)
+rp
+#+end_src
+
+
+*** Morris
+#+begin_src R
+aranjuezDF <- as.data.frame(arannjuez)
+aranjuezDF$tt <- as.character(index(aranjuez))
+mp <- mPlot(x = 'tt', y = c('TempAvg', 'TempMax'), type = 'Line',
+            data = aranjuezDF)
+mp$set(pointSize = 0, lineWidth = 1)
+mp
+#+end_src
+
 *** 
 
 #+LANGUAGE:  es

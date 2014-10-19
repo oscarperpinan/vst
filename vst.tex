@@ -1,4 +1,4 @@
-% Created 2014-10-19 dom 18:42
+% Created 2014-10-19 dom 19:03
 \documentclass[xcolor={usenames,svgnames,dvipsnames}]{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -438,7 +438,57 @@ con color (azul-rojo).
 \end{frame}
 
 
-\begin{frame}[label=sec-4-2-5]{}
+\section{Gráficos Interactivos}
+\label{sec-5}
+\subsection{rCharts}
+\label{sec-5-1}
+
+\begin{frame}[fragile,label=sec-5-1-1]{rCharts}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+library(rCharts)
+library(zoo)
+library(lattice)
+
+load('data/aranjuez.RData')
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-5-1-2]{Highcharts}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+aranjuezDF <- as.data.frame(aranjuez)
+aranjuezDF$tt <- as.numeric(as.POSIXct(index(aranjuez)))*1000
+hp <- hPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
+hp$xAxis(type = 'datetime')
+hp
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-5-1-3]{Rickshaw}
+ NO FUNCIONA :-(
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+rp <- rPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
+rp$set(slider = TRUE)
+rp
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=sec-5-1-4]{Morris}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+aranjuezDF <- as.data.frame(arannjuez)
+aranjuezDF$tt <- as.character(index(aranjuez))
+mp <- mPlot(x = 'tt', y = c('TempAvg', 'TempMax'), type = 'Line',
+            data = aranjuezDF)
+mp$set(pointSize = 0, lineWidth = 1)
+mp
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[label=sec-5-1-5]{}
 
 \end{frame}
 % Emacs 24.3.1 (Org mode 8.2.7c)
