@@ -6,11 +6,10 @@
 #+PROPERTY: eval no
 #+PROPERTY: exports both 
 #+PROPERTY: results output graphics
-#+begin_src R :exports none  
 
 * Introducción
 
-#+begin_src R
+#+begin_src R :exports none
   ##################################################################
   ## Initial configuration
   ##################################################################
@@ -58,26 +57,33 @@
 *** ggplot2
 *** zoo
 
-* Time Graph of Different Meteorological Variables
+* Serie Temporal Multivariante con Diferente Escala
+
+** Datos
+
+*** Aranjuez
+
+#+begin_src R
+  library(zoo)
+  load('data/aranjuez.RData')
+#+end_src
 
 ** Primera aproximación
 
 *** lattice: =xyplot=
 #+begin_src R :results output graphics :exports both :file figs/aranjuez.pdf
-  load('data/aranjuez.RData')
-  library(zoo)
   ## The layout argument arranges panels in rows
   xyplot(aranjuez, layout=c(1, ncol(aranjuez)))
 #+end_src
-
+*** 
 #+RESULTS:
 [[file:figs/aranjuez.pdf]]
 
-*** ggplot2: =autplot=
+*** ggplot2: =autoplot=
 #+begin_src R :results output graphics :exports both :file figs/aranjuezGG.pdf
   autoplot(aranjuez) + facet_free()
 #+end_src
-
+*** 
 #+RESULTS:
 [[file:figs/aranjuezGG.pdf]]
 
@@ -123,14 +129,14 @@
 [[file:figs/aranjuezXblocks.pdf]]
 
 *** ggplot2
+- ggplot2 necesita un =data.frame= en formato /long/: =fortify=
 #+begin_src R :eval no-export
   timeIdx <- index(aranjuez)
   
   long <- fortify(aranjuez, melt=TRUE)
 #+end_src
-*** The bands of values below the average can be easily extracted with
-  =scale= because these regions are negative when the =data.frame= is
-  centered.
+*** ggplot2
+- Bandas de valores por debajo de la media)
 #+begin_src R :eval no-export
   ## Values below mean are negative after being centered
   scaled <- fortify(scale(aranjuez, scale=FALSE), melt=TRUE)
@@ -142,8 +148,9 @@
   under <- scaled[underIdx,]
 #+end_src
 
-*** The years bands are defined with the function =endpoints= from the
-  =xts= package:
+*** ggplot2
+
+- Bandas consecutivas de años: =xts::endpoints=
 
 #+begin_src R :eval no-export
   library(xts)
@@ -155,8 +162,9 @@
   ## 'cols' is a vector with the color of each band
   cols <- rep_len(c('gray', 'white'), N)
 #+end_src
-*** The minima and maxima points of each variable are extracted with
-  =apply=:
+*** ggplot2
+
+- Mínimos y máximos.
 #+begin_src R :eval no-export
   minIdx <- timeIdx[apply(aranjuez, 2, which.min)]
   minVals <- apply(aranjuez, 2, min, na.rm=TRUE)
@@ -171,8 +179,7 @@
                      Series=names(aranjuez))
 #+end_src
 
-*** With =ggplot= we define the canvas, and the layers of information are
-  added successively:
+*** ggplot2
 #+begin_src R :eval no-export
   ggplot(data=long, aes(Index, Value)) +
       ## Time series of each variable
@@ -197,19 +204,24 @@
 #+end_src
 
 
-* Time Series of Variables with the Same Scale
+* Serie Temporal Multivariante con Misma Escala
 
 ** Primera aproximación
-*** lattice xyplot
+*** Datos
+- Navarra
 #+begin_src R
   load('data/navarra.RData')
 #+end_src
 
+
+*** lattice: =xyplot=
 #+begin_src R :results output graphics :exports both :file figs/navarra.pdf
-  avRad <- zoo(rowMeans(navarra, na.rm=1), index(navarra))
+  avRad <- zoo(rowMeans(navarra, na.rm=1),
+               index(navarra))
   pNavarra <- xyplot(navarra - avRad,
                      superpose=TRUE, auto.key=FALSE,
-                     lwd=0.5, alpha=0.3, col='midnightblue') 
+                     lwd=0.5, alpha=0.3,
+                     col='midnightblue') 
   pNavarra
 #+end_src
 
@@ -235,7 +247,21 @@
 
 ** The Horizon Graph
 
-*** horizonplot 
+*** Gráfico de horizonte
+
+El [[http://www.perceptualedge.com/articles/visual_business_intelligence/time_on_the_horizon.pdf][gráfico de horizonte]] es especialmente útil para mostrar series temporales de diferencias de forma compacta:
+- Comparar series.
+- Detectar puntos sobresalientes.
+
+Técnica:
+- Los valores positivos y negativos comparten el mismo espacio
+  vertical (negativos encima del eje horizontal) codificando el signo
+  con color (azul-rojo).
+- La magnitud de la diferencia se codifica con intensidad del color.
+- Las bandas de color comparten la misma referencia, están superpuestas, con bandas más oscuras por delante de las claras.
+
+*** =horizonplot=
+- Diferencias respecto de la media entre localidades 
 #+begin_src R :results output graphics :exports both :file figs/navarraHorizonplot.pdf
   library(latticeExtra)
   
@@ -248,7 +274,8 @@
 #+RESULTS:
 [[file:figs/navarraHorizonplot.pdf]]
 
-*** Diferencias
+*** =horizonplot=
+- Diferencias respecto a la media diaria interanual.
 #+begin_src R 
   Ta <- aranjuez$TempAvg
   timeIndex <- index(aranjuez)
@@ -256,15 +283,18 @@
   diffTa <- (Ta - longTa)
 #+end_src
 
-
+*** =horizonplot=
+- Usamos =cut= para dedicar un panel a cada año.
 #+begin_src R :results output graphics :exports both :file figs/diffTa_horizon.pdf
   years <- unique(format(timeIndex, '%Y'))
   
   horizonplot(diffTa, cut=list(n=8, overlap=0),
               colorkey=TRUE, layout=c(1, 8),
-              scales=list(draw=FALSE, y=list(relation='same')),
+              scales=list(draw=FALSE,
+                  y=list(relation='same')),
               origin=0, strip.left=FALSE) +
-      layer(grid.text(years[panel.number()], x = 0, y = 0.1, 
+      layer(grid.text(years[panel.number()],
+                      x = 0, y = 0.1, 
                       gp=gpar(cex=0.8),
                       just = "left"))
 #+end_src
@@ -274,15 +304,11 @@
 [[file:figs/diffTa_horizon.pdf]]
 
 
-* Scatterplot Matrix: Time as a Grouping Variable
+* El Tiempo como Variable
 
-** Introducción
+** Definir grupos con el índice temporal
 
-*** Que es
-
-** Realización
-
-*** lattice
+*** =splom= y =groups=
 #+begin_src R :results output graphics :exports both :file figs/aranjuezSplom.png :width 4000 :height 4000 :res 600
   load('data/aranjuez.RData')
   
@@ -300,57 +326,27 @@
               pch=19), cex=0.3, alpha=0.1)
 #+end_src
 
-
+*** 
 #+RESULTS:
 [[file:figs/aranjuezSplom.png]]
 
 
 
-** Hexagonal Binning
 
-*** Código
-#+begin_src R :results output graphics :exports both :file figs/aranjuezSplomHexbin.pdf
-  library(hexbin)
-  
-  splom(~as.data.frame(aranjuez),
-             panel=panel.hexbinplot, xlab='',
-             colramp=BTC,
-             diag.panel = function(x, ...){
-               yrng <- current.panel.limits()$ylim
-               d <- density(x, na.rm=TRUE)
-               d$y <- with(d, yrng[1] + 0.95 * diff(yrng) * y / max(y))
-               panel.lines(d)
-               diag.panel.splom(x, ...)
-             },
-             lower.panel = function(x, y, ...){
-               panel.hexbinplot(x, y, ...)
-               panel.loess(x, y, ..., col = 'red')
-             },
-             pscale=0, varname.cex=0.7
-             )
-  
-#+end_src
-
-*** 
-#+RESULTS:
-[[file:figs/aranjuezSplomHexbin.pdf]]
-
-* Scatterplot with Time as a Conditioning Variable
-
-** Introducción
-
-*** Introducción
-
-** Código
+** Definir paneles con el índice temporal
 
 *** ggplot2
 
 #+begin_src R :results output graphics :exports both  :width 2000 :height 2000 :res 300 :file figs/aranjuezFacetGrid.png
-  ggplot(data=aranjuezRshp, aes(Radiation, Temperature)) +
+  ggplot(data=aranjuezRshp,
+         aes(Radiation, Temperature)) +
       facet_grid(Statistic ~ month) +
-      geom_point(col='skyblue4', pch=19, cex=0.5, alpha=0.3) +
+      geom_point(col='skyblue4',
+                 pch=19, cex=0.5,
+                 alpha=0.3) +
       geom_rug() +
-      stat_smooth(se=FALSE, method='loess', col='indianred1', lwd=1.2) +
+      stat_smooth(se=FALSE, method='loess',
+                  col='indianred1', lwd=1.2) +
       theme_bw()
 #+end_src
 
@@ -367,8 +363,10 @@
                         col='skyblue4', pch=19,
                         cex=0.5, alpha=0.3)) +
       layer({
-          panel.rug(..., col.line='indianred1', end=0.05, alpha=0.6)
-          panel.loess(..., col='indianred1', lwd=1.5, alpha=1)
+          panel.rug(..., col.line='indianred1',
+                    end=0.05, alpha=0.6)
+          panel.loess(..., col='indianred1',
+                      lwd=1.5, alpha=1)
       })
 #+end_src
 
@@ -378,7 +376,7 @@
 [[file:figs/aranjuezOuterStrips.pdf]]
 
 
-** 
+*** 
 
 #+LANGUAGE:  es
 #+OPTIONS:   num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
@@ -395,7 +393,7 @@
 #+BEAMER_THEME: Goettingen
 #+BEAMER_COLOR_THEME: rose
 #+BEAMER_FONT_THEME: serif
-#+LATEX_HEADER: \AtBeginSection[]{\begin{frame}[plain]\tableofcontents[currentsection,hideallsubsections]\end{frame}}
+#+LATEX_HEADER: \AtBeginSubsection[]{\begin{frame}[plain]\tableofcontents[currentsubsection,sectionstyle=show/shaded,subsectionstyle=show/shaded/hide]\end{frame}}
 #+LATEX_HEADER: \lstset{keywordstyle=\color{blue}, commentstyle=\color{gray!90}, basicstyle=\ttfamily\small, columns=fullflexible, breaklines=true,linewidth=\textwidth, backgroundcolor=\color{gray!23}, basewidth={0.5em,0.4em}, literate={á}{{\'a}}1 {ñ}{{\~n}}1 {é}{{\'e}}1 {ó}{{\'o}}1 {º}{{\textordmasculine}}1}
 #+LATEX_HEADER: \usepackage{mathpazo}
 #+LATEX_HEADER: \hypersetup{colorlinks=true, linkcolor=Blue, urlcolor=Blue}
