@@ -1,4 +1,4 @@
-% Created 2014-10-19 dom 19:03
+% Created 2014-10-21 mar 13:56
 \documentclass[xcolor={usenames,svgnames,dvipsnames}]{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -42,19 +42,72 @@
 \section{Introducción}
 \label{sec-1}
 
-\subsection{Series temporales}
+\subsection{Paquetes}
 \label{sec-1-1}
-\begin{frame}[label=sec-1-1-1]{Fundamentos básicos}
+\begin{frame}[label=sec-1-1-1]{CRAN Task View}
+\begin{block}{\href{http://CRAN.R-project.org/view\%3DTimeSeries}{CRAN Tasks View ``Time Series Analysis'''}}
+\begin{itemize}
+\item zoo
+\item xts
+\end{itemize}
+
+\cite{Ripley.Hornik2001} 
+\cite{Grothendieck.Petzoldt2004}
+\end{block}
 \end{frame}
 
-\subsection{Paquetes}
+
+\subsection{Configuración}
 \label{sec-1-2}
-\begin{frame}[label=sec-1-2-1]{lattice}
+\begin{frame}[fragile,label=sec-1-2-1]{Cargar en el orden correcto}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  library(lattice)
+  library(ggplot2)
+  library(latticeExtra)
+  library(zoo)
+\end{lstlisting}
 \end{frame}
-\begin{frame}[label=sec-1-2-2]{ggplot2}
+\begin{frame}[fragile,label=sec-1-2-2]{Tema para \texttt{lattice}}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  myTheme <- custom.theme.2(pch=19, cex=0.7,
+                            region=rev(brewer.pal(9, 'YlOrRd')),
+                            symbol = brewer.pal(n=8, name = "Dark2"))
+  myTheme$strip.background$col='transparent'
+  myTheme$strip.shingle$col='transparent'
+  myTheme$strip.border$col='transparent'
+\end{lstlisting}
 \end{frame}
-\begin{frame}[label=sec-1-2-3]{zoo}
+
+\begin{frame}[fragile,label=sec-1-2-3]{Escalas}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  xscale.components.custom <- function(...){
+      ans <- xscale.components.default(...)
+      ans$top=FALSE
+      ans}
+  yscale.components.custom <- function(...){
+      ans <- yscale.components.default(...)
+      ans$right=FALSE
+      ans}
+\end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile,label=sec-1-2-4]{Establecemos opciones por defecto}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  myArgs <- list(as.table=TRUE,
+                 between=list(x=0.5, y=0.2),
+                 xscale.components = xscale.components.custom,
+                 yscale.components = yscale.components.custom)
+  defaultArgs <- lattice.options()$default.args
+  
+  lattice.options(default.theme = myTheme,
+                  default.args = modifyList(defaultArgs, myArgs))
+\end{lstlisting}
+\end{frame}
+
 
 \section{Serie Temporal Multivariante con Diferente Escala}
 \label{sec-2}

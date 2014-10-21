@@ -1,0 +1,31 @@
+* Visualización de Series Temporales
+
+Este repositorio recoge el material del taller "Visualización de Series Temporales" de las [[http://r-es.org/VI%2BJornadas][VI Jornadas de Usuarios de R]] (2014).
+
+Para utilizarlo puedes optar por descargar el fichero ZIP o usar =git=:
+
+#+BEGIN_EXAMPLE
+git clone https://github.com/oscarperpinan/vst.git
+#+END_EXAMPLE
+
+El código asume que el directorio de trabajo contiene este repositorio. Por tanto, antes de empezar, debes usar =setwd=:
+#+begin_src R
+setwd('/ruta/de/mi/copia/local/')
+#+end_src
+
+Este taller emplea varios paquetes que debes tener instalados previamente:
+
+#+begin_src R
+install.packages('zoo')
+install.packages('lattice')
+install.packages('latticeExtra')
+install.packages('ggplot2')
+
+install.packages('devtools')
+devtools::install_github('rCharts', 'ramnathv')
+#+end_src
+
+
+[[https://i.creativecommons.org/l/by-sa/4.0/88x31.png]] Este material está
+bajo una licencia [[http://creativecommons.org/licenses/by-sa/4.0/][Creative Commons CC-BY-SA 4.0]].
+

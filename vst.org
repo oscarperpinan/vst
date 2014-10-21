@@ -9,26 +9,241 @@
 
 * Introducción
 
-#+begin_src R :exports none
-  ##################################################################
-  ## Initial configuration
-  ##################################################################
-  ## Clone or download the repository and set the working directory
-  ## with setwd to the folder where the repository is located.
-  
+** Paquetes
+*** CRAN Task View
+**** [[http://CRAN.R-project.org/view%3DTimeSeries][CRAN Tasks View ``Time Series Analysis'']]
+     - zoo
+     - xts
+
+\cite{Ripley.Hornik2001} 
+\cite{Grothendieck.Petzoldt2004}
+
+# *** zoo
+# The \texttt{zoo} package \cite{Zeileis.Grothendieck2005} provides an
+# \texttt{S3} class with methods for indexed totally ordered
+# observations. Its key design goals are independence of a particular
+# index class and consistency with base \textsf{R} and the \texttt{ts}
+# class for regular time series.
+
+# \index{yearmon@\texttt{yearmon}}
+# \index{yearqtr@\texttt{yearqtr}}
+
+# Objects of class \texttt{zoo} are created by the function \texttt{zoo}
+# from a numeric vector, matrix, or a factor that is totally ordered by
+# some index vector. This index is usually a measure of time but every
+# other numeric, character, or even more abstract vector that provides a
+# total ordering of the observations is also suitable. It must be noted
+# that this package defines two new index classes, \texttt{yearmon} and
+# \texttt{yearqtr}, for representing monthly and quarterly data,
+# respectively.
+
+# The package defines several methods associated with standard generic
+# functions such as \texttt{print}, \texttt{summary}, \texttt{str},
+# \texttt{head}, \texttt{tail}, and \texttt{[} (subsetting). In
+# addition, standard mathematical operations can be performed with
+# \texttt{zoo} objects, although only for the intersection of the
+# indexes of the objects.
+
+# On the other hand, the data stored in \texttt{zoo} objects can be
+# extracted with \texttt{coredata}, which drops the index information,
+# and can be replaced by \texttt{coredata<-}. The index can be extracted
+# with \texttt{index} or \texttt{time}, and can be modified by
+# \texttt{index<-}. Finally, the \texttt{window} and \texttt{window<-}
+# methods extract or replace time windows of \texttt{zoo} objects.
+
+# Two \texttt{zoo} objects can be merged by common indexes with
+# \texttt{merge} and \texttt{cbind}. The \texttt{merge} method combines
+# the columns of several objects along the union or the intersection of
+# the indexes. The \texttt{rbind} method combines the indexes (rows) of
+# the objects.
+
+# The \texttt{aggregate} method splits a \texttt{zoo} object into
+# subsets along a coarser index grid, computes a function (\texttt{sum}
+# is the default) for each subset, and returns the aggregated
+# \texttt{zoo} object.
+
+# This package provides four methods for dealing with missing
+# observations:
+# \begin{enumerate}
+# \item \texttt{na.omit} removes incomplete observations.
+# \item \texttt{na.contiguous} extracts the longest consecutive stretch
+#   of non-missing values.
+# \item \texttt{na.approx} replaces missing values by linear
+#   interpolation.
+# \item \texttt{na.locf} replaces missing observations by the most
+#   recent non-\texttt{NA} prior to it.
+# \end{enumerate}
+
+# The package defines interfaces to \texttt{read.table} and
+# \texttt{write.table} for reading, \texttt{read.zoo}, and writing,
+# \texttt{write.zoo}, \texttt{zoo} series from or to text files.  The
+# \texttt{read.zoo} function expects either a text file or connection as
+# input or a \texttt{data.frame}. \texttt{write.zoo} first coerces its
+# argument to a \texttt{data.frame}, adds a column with the index, and
+# then calls \texttt{write.table}.
+
+# *** xts
+# The \texttt{xts} package \cite{Ryan.Ulrich2013} extends the
+# \texttt{zoo} class definition to provide a general time-series
+# object. The index of an \texttt{xts} object must be of a time or date
+# class: \texttt{Date}, \texttt{POSIXct}, \texttt{chron},
+# \texttt{yearmon}, \texttt{yearqtr}, or \texttt{timeDate}. With this
+# restriction, the subset operator \texttt{[} is able to extract data
+# using the
+# ISO:8601\footnote{\url{http://en.wikipedia.org/wiki/ISO_8601}} time
+# format notation \texttt{CCYY-MM-DD HH:MM:SS}. It is also possible to
+# extract a range of times with a \texttt{from/to} notation, where both
+# from and to are optional. If either side is missing, it is
+# interpreted as a request to retrieve data from the beginning, or
+# through the end of the data object.
+
+# Furthermore, this package provides several time-based tools:
+# \begin{itemize}
+# \item \texttt{endpoints} identifies the endpoints with respect to
+#   time.
+# \item \texttt{to.period} changes the periodicity to a coarser time
+#   index.
+# \item The functions \lstinline{period.*} and \lstinline{apply.*}
+#   evaluate a function over a set of non-overlapping time periods.
+# \end{itemize}
+
+
+# *** lattice
+# The \texttt{lattice} package \cite{Sarkar2010} is an independent
+# implementation of Trellis graphics, which were mostly influenced by
+# \emph{The Elements of Graphing Data} \cite{Cleveland1994}. Trellis
+# graphics often consist of a rectangular array of panels. The
+# \texttt{lattice} package uses a \emph{formula} interface to define the
+# structure of the array of panels with the specification of the
+# variables involved in the plot. The result of a \texttt{lattice}
+# high-level function is a \texttt{trellis} object.
+
+# For bivariate graphics, the formula is generally of the form
+# \lstinline{y ~ x} representing a single panel plot with \texttt{y} versus
+# \texttt{x}. This formula can also involve expressions. The main
+# function for bivariate graphics is \texttt{xyplot}.
+
+# Optionally, the formula may be \lstinline{y ~ x | g1 * g2} and \texttt{y}
+# is represented against \texttt{x} conditional on the variables
+# \texttt{g1} and \texttt{g2}. Each unique combination of the levels of
+# these conditioning variables determines a subset of the variables
+# \texttt{x} and \texttt{y}. Each subset provides the data for a single
+# panel in the Trellis display, an array of panels laid out in columns,
+# rows, and pages.
+
+# For example, in the following code, the variable \texttt{wt} of the
+# dataset \texttt{mtcars} is represented against the \texttt{mpg}, with
+# a panel for each level of the categorical variable \texttt{am}. The
+# points are grouped by the values of the \texttt{cyl} variable.
+
+# \lstset{language=R,numbers=none}
+# \begin{lstlisting} 
+# xyplot(wt ~ mpg | am, data = mtcars, groups = cyl)
+# \end{lstlisting}
+
+# For trivariate graphics, the formula is of the form 
+# \lstinline{z ~ x * y}, where \texttt{z} is a numeric response, 
+# and \texttt{x} and \texttt{y} are numeric values evaluated on a
+# rectangular grid. Once again, the formula may include conditioning
+# variables, for example \lstinline{z ~ x * y | g1 * g2}. The main
+# function for these graphics is \texttt{levelplot}.
+
+# The plotting of each panel is performed by the panel function, specified in
+# a high-level function call as the \texttt{panel} argument. Each
+# high-level \texttt{lattice} function has a default panel function,
+# although the user can create new Trellis displays with custom panel
+# functions.
+
+# \texttt{lattice} is a member of the recommended packages list so it is
+# commonly distributed with \textsf{R} itself. There are more than 250
+# packages depending on it, and the most important packages for our
+# purposes (\texttt{zoo}, \texttt{sp}, and \texttt{raster}) define
+# methods to display their classes using \texttt{lattice}.
+
+# \index{Packages!latticeExtra@\texttt{latticeExtra}} 
+
+# On the other hand, the \texttt{latticeExtra} package
+# \cite{Sarkar.Andrews2012} provides additional flexibility for the
+# somewhat rigid structure of the Trellis framework implemented in
+# \texttt{lattice}. This package complements the \texttt{lattice} with
+# the implementation of layers via the \texttt{layer} function, and
+# superposition of \texttt{trellis} objects and layers with the
+# \lstinline{+.trellis} function. Using both packages, you can define a
+# graphic with the formula interface (under the \texttt{lattice} model)
+# and overlay additional content as layers (following the
+# \texttt{ggplot2} model).
+
+# *** ggplot2
+
+# The \texttt{ggplot2} package \cite{Wickham2009} is an implementation
+# of the system proposed in \emph{The Grammar of Graphics}
+# \cite{Wilkinson1999}, a general scheme for data visualization that
+# breaks up graphs into semantic components such as scales and
+# layers. Under this framework, the definition of the graphic with
+# \texttt{ggplot2} is done with a combination of several functions
+# that provides the components, instead of the formula interface of
+# \texttt{lattice}.
+
+# With \texttt{ggplot2}, a graphic is composed of
+# \begin{itemize}
+# \item A dataset, \texttt{data}, and a set of mappings from variables
+#   to aesthetics, \texttt{aes}.
+# \item One or more layers, each composed of: a geometric object,
+#   \texttt{geom\_*}, to control the type of plot you create (points,
+#   lines, etc.); a statistical transformation, \texttt{stat\_*}; and a
+#   position adjustment (and optionally, additional dataset and
+#   aesthetic mappings).
+# \item A scale, \texttt{scale\_*}, to control the mapping from data to
+#   aesthetic attributes. Scales are common across layers to ensure a
+#   consistent mapping from data to aesthetics.
+# \item A coordinate system, \texttt{coords\_*}.
+# \item Optionally, a faceting specification, \texttt{facet\_*}, the
+#   equivalent of Trellis graphics with panels.
+# \end{itemize}
+
+# The function \texttt{ggplot} is typically used to construct a plot
+# incrementally, using the \texttt{+} operator to add layers to the
+# existing ggplot object.  For instance, the following code (equivalent to
+# the previous \texttt{lattice} example) uses \texttt{mtcars} as
+# the dataset, and maps the \texttt{mpg} variable on the x-axis and the
+# \texttt{wt} variable on the y-axis. The geometric object is the point
+# using the \texttt{cyl} variable to control the color. Finally, the
+# levels of the \texttt{am} variable define the panels of the graphic.
+
+# \lstset{language=R,numbers=none}
+# \begin{lstlisting}
+# ggplot(mtcars, aes(mpg, wt)) +
+#     geom_point(aes(colour=factor(cyl))) +
+#     facet_grid(. ~ am)
+# \end{lstlisting}
  
+# This package is increasingly popular, with a list of more than ninety
+# packages depending on it. On the other hand, few packages provide
+# method definitions based on \texttt{ggplot2} to display their
+# classes. In our context, only the \texttt{zoo} package defines the
+# \texttt{autoplot} function based on it.
+
+
+** Configuración
+*** Cargar en el orden correcto
+#+begin_src R
   library(lattice)
   library(ggplot2)
   library(latticeExtra)
   library(zoo)
-  
+#+end_src  
+*** Tema para =lattice=
+#+begin_src R
   myTheme <- custom.theme.2(pch=19, cex=0.7,
                             region=rev(brewer.pal(9, 'YlOrRd')),
                             symbol = brewer.pal(n=8, name = "Dark2"))
   myTheme$strip.background$col='transparent'
   myTheme$strip.shingle$col='transparent'
   myTheme$strip.border$col='transparent'
-  
+#+end_src  
+
+*** Escalas
+#+begin_src R
   xscale.components.custom <- function(...){
       ans <- xscale.components.default(...)
       ans$top=FALSE
@@ -37,6 +252,10 @@
       ans <- yscale.components.default(...)
       ans$right=FALSE
       ans}
+#+end_src
+
+*** Establecemos opciones por defecto
+#+begin_src R
   myArgs <- list(as.table=TRUE,
                  between=list(x=0.5, y=0.2),
                  xscale.components = xscale.components.custom,
@@ -45,17 +264,8 @@
   
   lattice.options(default.theme = myTheme,
                   default.args = modifyList(defaultArgs, myArgs))
-  ##################################################################
 #+end_src
 
-
-** Series temporales
-*** Fundamentos básicos
-
-** Paquetes
-*** lattice
-*** ggplot2
-*** zoo
 
 * Serie Temporal Multivariante con Diferente Escala
 
