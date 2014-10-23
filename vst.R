@@ -258,8 +258,10 @@ dev.off()
 ## - Debemos pasar de format /wide/ a /long/ con =reshape=:
 
   aranjuezDF <- data.frame(aranjuez,
-                           month=format(index(aranjuez), '%m'))
-  aranjuezRshp <- reshape(aranjuezDF, direction='long',
+                           month=format(index(aranjuez),
+                               '%m'))
+  aranjuezRshp <- reshape(aranjuezDF,
+                          direction='long',
                           varying=list(names(aranjuez)[1:3]),
                           v.names='Temperature',
                           times=names(aranjuez)[1:3],

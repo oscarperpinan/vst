@@ -1,4 +1,4 @@
-% Created 2014-10-23 jue 12:56
+% Created 2014-10-23 jue 13:12
 \documentclass[xcolor={usenames,svgnames,dvipsnames}]{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -569,7 +569,25 @@ superpuestas, con bandas más oscuras por delante de las claras.
 \subsection{Definir paneles con el índice temporal}
 \label{sec-4-2}
 
-\begin{frame}[fragile,label=sec-4-2-1]{ggplot2}
+\begin{frame}[fragile,label=sec-4-2-1]{Reajustamos datos}
+ \begin{itemize}
+\item Debemos pasar de format \emph{wide} a \emph{long} con \texttt{reshape}:
+\end{itemize}
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  aranjuezDF <- data.frame(aranjuez,
+                           month=format(index(aranjuez),
+                               '%m'))
+  aranjuezRshp <- reshape(aranjuezDF,
+                          direction='long',
+                          varying=list(names(aranjuez)[1:3]),
+                          v.names='Temperature',
+                          times=names(aranjuez)[1:3],
+                          timevar='Statistic')
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-4-2-2]{ggplot2}
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   ggplot(data=aranjuezRshp,
@@ -585,12 +603,12 @@ superpuestas, con bandas más oscuras por delante de las claras.
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[label=sec-4-2-2]{}
+\begin{frame}[label=sec-4-2-3]{}
 \includegraphics[width=.9\linewidth]{figs/aranjuezFacetGrid.png}
 \end{frame}
 
 
-\begin{frame}[fragile,label=sec-4-2-3]{lattice}
+\begin{frame}[fragile,label=sec-4-2-4]{lattice}
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   useOuterStrips(xyplot(Temperature ~ Radiation | month * Statistic,
@@ -608,7 +626,7 @@ superpuestas, con bandas más oscuras por delante de las claras.
 \end{frame}
 
 
-\begin{frame}[label=sec-4-2-4]{}
+\begin{frame}[label=sec-4-2-5]{}
 \includegraphics[width=.9\linewidth]{figs/aranjuezOuterStrips.pdf}
 \end{frame}
 
