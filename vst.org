@@ -176,7 +176,7 @@
   Year <- function(x)format(x, "%Y")
 #+end_src
 
-#+begin_src R
+#+begin_src R :eval no :tangle no
 ## Alternation of years
 panel.xblocks(x, Year,
               col = c("lightgray", "white"),
@@ -431,6 +431,19 @@ temporales de diferencias de forma compacta:
 
 ** Definir paneles con el índice temporal
 
+*** Reajustamos datos
+- Debemos pasar de format /wide/ a /long/ con =reshape=:
+#+begin_src R
+  aranjuezDF <- data.frame(aranjuez,
+                           month=format(index(aranjuez), '%m'))
+  aranjuezRshp <- reshape(aranjuezDF, direction='long',
+                          varying=list(names(aranjuez)[1:3]),
+                          v.names='Temperature',
+                          times=names(aranjuez)[1:3],
+                          timevar='Statistic')
+#+end_src
+
+#+end_src
 *** ggplot2
 
 #+begin_src R :results output graphics :exports both  :width 2000 :height 2000 :res 300 :file figs/aranjuezFacetGrid.png

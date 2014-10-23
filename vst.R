@@ -95,15 +95,6 @@ pdf(file="figs/aranjuezXblocks.pdf")
          })
 dev.off()
 
-## Alternation of years
-panel.xblocks(x, Year,
-              col = c("lightgray", "white"),
-              border = "darkgray")
-## Values under the average highlighted with red regions
-panel.xblocks(x, y<mean(y, na.rm=TRUE),
-                         col = "indianred1",
-              height=unit(0.1, 'npc'))
-
 ## ggplot2: acomodamos datos
 ## - ggplot2 necesita un =data.frame= en formato /long/: =fortify=
 
@@ -262,6 +253,17 @@ png(filename="figs/aranjuezSplom.png",res=600,height=4000,width=4000)
           par.settings=custom.theme(symbol=colors,
               pch=19), cex=0.3, alpha=0.1)
 dev.off()
+
+## Reajustamos datos
+## - Debemos pasar de format /wide/ a /long/ con =reshape=:
+
+  aranjuezDF <- data.frame(aranjuez,
+                           month=format(index(aranjuez), '%m'))
+  aranjuezRshp <- reshape(aranjuezDF, direction='long',
+                          varying=list(names(aranjuez)[1:3]),
+                          v.names='Temperature',
+                          times=names(aranjuez)[1:3],
+                          timevar='Statistic')
 
 ## ggplot2
 
