@@ -21,6 +21,8 @@ install.packages('lattice')
 install.packages('latticeExtra')
 install.packages('ggplot2')
 
+install.packages('googleVis')
+
 install.packages('devtools')
 devtools::install_github('rCharts', 'ramnathv')
 #+end_src

@@ -1,4 +1,4 @@
-% Created 2014-10-21 mar 13:56
+% Created 2014-10-23 jue 12:56
 \documentclass[xcolor={usenames,svgnames,dvipsnames}]{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -47,15 +47,64 @@
 \begin{frame}[label=sec-1-1-1]{CRAN Task View}
 \begin{block}{\href{http://CRAN.R-project.org/view\%3DTimeSeries}{CRAN Tasks View ``Time Series Analysis'''}}
 \begin{itemize}
-\item zoo
-\item xts
+\item \href{http://cran.r-project.org/web/packages/zoo/vignettes/zoo.pdf}{zoo}
+\item \href{http://cran.r-project.org/web/packages/xts/vignettes/xts.pdf}{xts}
 \end{itemize}
-
-\cite{Ripley.Hornik2001} 
-\cite{Grothendieck.Petzoldt2004}
+\end{block}
+\begin{block}{Referencias}
+\begin{itemize}
+\item Ripley y Hornik, 2001. \href{http://CRAN.R-project.org/doc/Rnews/Rnews_2001-2.pdf}{Date Time Classes}
+\item Grothendieck y Petzoldt, 2004. \href{http://CRAN.R-project.org/doc/Rnews/Rnews_2004-1.pdf}{Date and Time Classes in R}
+\end{itemize}
 \end{block}
 \end{frame}
 
+\begin{frame}[fragile,label=sec-1-1-2]{zoo}
+ \begin{itemize}
+\item El paquete \texttt{zoo} define una clase \texttt{S3} y métodos para series temporales.
+\item Los objetos \texttt{zoo} se crean con la función homónima:
+\begin{itemize}
+\item Los datos pueden ser un vector, una matriz, o un \texttt{factor} totalmente ordenados por un vector índice.
+\item Este índice puede ser una medida de tiempo, pero no es imprescindible.
+\end{itemize}
+\item Define dos nuevos índices temporales: \texttt{yearmon} y \texttt{yearqtr}.
+\item Incluye métodos asociados a funciones genéricas (\texttt{print}, \texttt{summary},
+etc.) y a operaciones matemáticas.
+\end{itemize}
+\end{frame}
+\begin{frame}[fragile,label=sec-1-1-3]{zoo: funciones básicas}
+ \begin{itemize}
+\item \texttt{coredata} extrae el contenido de un \texttt{zoo} (sin índice temporal).
+\item \texttt{index} extrae el índice temporal.
+\item \texttt{window} extrae una ventana temporal de un \texttt{zoo}.
+\item \texttt{merge} y \texttt{cbind} unen dos \texttt{zoo} teniendo en cuenta los índices temporales.
+\item \texttt{aggregate} parte un \texttt{zoo} en grupos definidos por alguna condición
+sobre su índice temporal, calcula una función sobre cada grupo, y
+devuelve la serie temporal agregada.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-1-1-4]{zoo: funciones básicas}
+ \begin{itemize}
+\item \texttt{NA}: \texttt{na.omit}, \texttt{na.contiguous}, \texttt{na.approx}, \texttt{na.locf}.
+
+\item \href{http://cran.r-project.org/web/packages/zoo/vignettes/zoo-read.pdf}{Escritura y lectura de datos}: \texttt{write.zoo} y \texttt{read.zoo}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-1-1-5]{xts}
+ \begin{itemize}
+\item \texttt{xts} amplia las funcionalidades de \texttt{zoo} implementando la notación
+\href{http://en.wikipedia.org/wiki/ISO_8601}{ISO:8601} para extraer subconjuntos de una serie temporal.
+\item Funciones importantes:
+\begin{itemize}
+\item \texttt{endpoints} identifica los puntos en los que termina una condición.
+\item \texttt{to.period} cambia la periodicidad de una serie temporal.
+\item \texttt{period.*} y \texttt{apply.*} evaluan una función sobre un conjunto de
+periodos temporales.
+\end{itemize}
+\end{itemize}
+\end{frame}
 
 \subsection{Configuración}
 \label{sec-1-2}
@@ -72,8 +121,10 @@
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   myTheme <- custom.theme.2(pch=19, cex=0.7,
-                            region=rev(brewer.pal(9, 'YlOrRd')),
-                            symbol = brewer.pal(n=8, name = "Dark2"))
+                            region=rev(brewer.pal(9,
+                                name = 'YlOrRd')),
+                            symbol = brewer.pal(n=8,
+                                name = "Dark2"))
   myTheme$strip.background$col='transparent'
   myTheme$strip.shingle$col='transparent'
   myTheme$strip.border$col='transparent'
@@ -149,7 +200,8 @@
 
 \subsection{Anotaciones}
 \label{sec-2-3}
-\begin{frame}[fragile,label=sec-2-3-1]{lattice}
+
+\begin{frame}[fragile,label=sec-2-3-1]{lattice: Función completa}
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   library(grid)
@@ -159,7 +211,8 @@
   ## index
   Year <- function(x)format(x, "%Y")
   
-  xyplot(aranjuez, layout=c(1, ncol(aranjuez)), strip=FALSE,
+  xyplot(aranjuez, layout=c(1, ncol(aranjuez)),
+         strip=FALSE,
          scales=list(y=list(cex=0.6, rot=0)),
          panel=function(x, y, ...){
            ## Alternation of years
@@ -187,11 +240,69 @@
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[label=sec-2-3-2]{}
+\begin{frame}[fragile,label=sec-2-3-2]{lattice: \texttt{panel.xblocks}}
+ \begin{itemize}
+\item Paquetes y función auxiliar
+\end{itemize}
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+  library(grid)
+  library(latticeExtra)
+
+  ## Auxiliary function to extract the year value of a POSIXct time
+  ## index
+  Year <- function(x)format(x, "%Y")
+\end{lstlisting}
+
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+## Alternation of years
+panel.xblocks(x, Year,
+              col = c("lightgray", "white"),
+              border = "darkgray")
+## Values under the average highlighted with red regions
+panel.xblocks(x, y<mean(y, na.rm=TRUE),
+                         col = "indianred1",
+              height=unit(0.1, 'npc'))
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile,label=sec-2-3-3]{lattice: \texttt{panel.lines}}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+           ## Time series
+           panel.lines(x, y, col='royalblue4', lwd=0.5, ...)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-2-3-4]{lattice: \texttt{panel.text}}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+           ## Label of each time series
+           panel.text(x[1], min(y, na.rm=TRUE),
+                      names(aranjuez)[panel.number()],
+                      cex=0.6, adj=c(0, 0), srt=90, ...)
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,label=sec-2-3-5]{lattice: \texttt{panel.points}}
+ \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+           ## Triangles to point the maxima and minima 
+           idxMax <- which.max(y)
+           panel.points(x[idxMax], y[idxMax],
+                        col='black', fill='lightblue', pch=24)
+           idxMin <- which.min(y)
+           panel.points(x[idxMin], y[idxMin],
+                        col='black', fill='lightblue', pch=25)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[label=sec-2-3-6]{}
 \includegraphics[width=.9\linewidth]{figs/aranjuezXblocks.pdf}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-2-3-3]{ggplot2}
+\begin{frame}[fragile,label=sec-2-3-7]{ggplot2: acomodamos datos}
  \begin{itemize}
 \item ggplot2 necesita un \texttt{data.frame} en formato \emph{long}: \texttt{fortify}
 \end{itemize}
@@ -202,9 +313,9 @@
   long <- fortify(aranjuez, melt=TRUE)
 \end{lstlisting}
 \end{frame}
-\begin{frame}[fragile,label=sec-2-3-4]{ggplot2}
+\begin{frame}[fragile,label=sec-2-3-8]{ggplot2}
  \begin{itemize}
-\item Bandas de valores por debajo de la media)
+\item Bandas de valores por debajo de la media
 \end{itemize}
 \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
@@ -212,14 +323,15 @@
   scaled <- fortify(scale(aranjuez, scale=FALSE), melt=TRUE)
   ## The 'scaled' column is the result of the centering.
   ## The new 'Value' column store the original values.
-  scaled <- transform(scaled, scaled=Value, Value=long$Value)
+  scaled <- transform(scaled, scaled=Value,
+                      Value=long$Value)
   underIdx <- which(scaled$scaled <= 0)
   ## 'under' is the subset of values below the average
   under <- scaled[underIdx,]
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-2-3-5]{ggplot2}
+\begin{frame}[fragile,label=sec-2-3-9]{ggplot2}
  \begin{itemize}
 \item Bandas consecutivas de años: \texttt{xts::endpoints}
 \end{itemize}
@@ -236,7 +348,7 @@
   cols <- rep_len(c('gray', 'white'), N)
 \end{lstlisting}
 \end{frame}
-\begin{frame}[fragile,label=sec-2-3-6]{ggplot2}
+\begin{frame}[fragile,label=sec-2-3-10]{ggplot2}
  \begin{itemize}
 \item Mínimos y máximos.
 \end{itemize}
@@ -256,7 +368,7 @@
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-2-3-7]{ggplot2}
+\begin{frame}[fragile,label=sec-2-3-11]{ggplot2: resultado}
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   ggplot(data=long, aes(Index, Value)) +
@@ -276,8 +388,7 @@
       ## Axis labels and theme definition
       labs(x='Time', y=NULL) +
       theme_bw() +
-      ## Each series is displayed in a different panel with an
-      ## independent y scale
+      ## Each series has different panel and y-scale
       facet_free()
 \end{lstlisting}
 \end{frame}
@@ -290,7 +401,7 @@
 \label{sec-3-1}
 \begin{frame}[fragile,label=sec-3-1-1]{Datos}
  \begin{itemize}
-\item Navarra
+\item Medidas de radiación solar en estaciones de Navarra.
 \end{itemize}
 \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
@@ -316,11 +427,19 @@
 \includegraphics[width=.9\linewidth]{figs/navarra.pdf}
 \end{frame}
 
-\subsection{Aspect Ratio and Rate of Change}
+\subsection{Ratio de aspecto, Ratio de Cambio}
 \label{sec-3-2}
 
-\begin{frame}[fragile,label=sec-3-2-1]{lattice}
- \lstset{language=R,label= ,caption= ,numbers=none}
+\begin{frame}[fragile,label=sec-3-2-1]{\texttt{aspect} y \texttt{cut}}
+ \begin{itemize}
+\item La recomendación general para transmitir adecuadamente el ratio de
+cambio es elegir el ratio entre altura y anchura de la ventana
+gráfica de forma que la orientación de los segmentos que componen la
+serie estén centradas en 45 grados (\emph{banking to 45})
+\item En \texttt{xyplot} se define con \texttt{aspect}, pero hay que usar el método
+cut-and-stack para evitar figuras demasiado anchas.
+\end{itemize}
+\lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
   xyplot(navarra - avRad,
          aspect='xy', cut=list(n=3, overlap=0.1),
@@ -335,27 +454,30 @@
 \end{frame}
 
 
-\subsection{The Horizon Graph}
+\subsection{El gráfico de horizonte}
 \label{sec-3-3}
 
 \begin{frame}[label=sec-3-3-1]{Gráfico de horizonte}
-El \href{http://www.perceptualedge.com/articles/visual_business_intelligence/time_on_the_horizon.pdf}{gráfico de horizonte} es especialmente útil para mostrar series temporales de diferencias de forma compacta:
+El \href{http://www.perceptualedge.com/articles/visual_business_intelligence/time_on_the_horizon.pdf}{gráfico de horizonte} es especialmente útil para mostrar series
+temporales de diferencias de forma compacta:
 \begin{itemize}
 \item Comparar series.
 \item Detectar puntos sobresalientes.
 \end{itemize}
+\end{frame}
 
-Técnica:
+\begin{frame}[label=sec-3-3-2]{Gráfico de horizonte: técnica}
 \begin{itemize}
 \item Los valores positivos y negativos comparten el mismo espacio
 vertical (negativos encima del eje horizontal) codificando el signo
 con color (azul-rojo).
 \item La magnitud de la diferencia se codifica con intensidad del color.
-\item Las bandas de color comparten la misma referencia, están superpuestas, con bandas más oscuras por delante de las claras.
+\item Las bandas de color comparten la misma referencia, están
+superpuestas, con bandas más oscuras por delante de las claras.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-3-3-2]{\texttt{horizonplot}}
+\begin{frame}[fragile,label=sec-3-3-3]{\texttt{horizonplot}}
  \begin{itemize}
 \item Diferencias respecto de la media entre localidades
 \end{itemize}
@@ -369,11 +491,11 @@ con color (azul-rojo).
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[label=sec-3-3-3]{}
+\begin{frame}[label=sec-3-3-4]{}
 \includegraphics[width=.9\linewidth]{figs/navarraHorizonplot.pdf}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-3-3-4]{\texttt{horizonplot}}
+\begin{frame}[fragile,label=sec-3-3-5]{\texttt{horizonplot}}
  \begin{itemize}
 \item Diferencias respecto a la media diaria interanual.
 \end{itemize}
@@ -386,7 +508,7 @@ con color (azul-rojo).
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-3-3-5]{\texttt{horizonplot}}
+\begin{frame}[fragile,label=sec-3-3-6]{\texttt{horizonplot}}
  \begin{itemize}
 \item Usamos \texttt{cut} para dedicar un panel a cada año.
 \end{itemize}
@@ -406,7 +528,7 @@ con color (azul-rojo).
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[label=sec-3-3-6]{}
+\begin{frame}[label=sec-3-3-7]{}
 \includegraphics[width=.9\linewidth]{figs/diffTa_horizon.pdf}
 \end{frame}
 
@@ -493,55 +615,75 @@ con color (azul-rojo).
 
 \section{Gráficos Interactivos}
 \label{sec-5}
-\subsection{rCharts}
+\subsection{googleVis}
 \label{sec-5-1}
 
-\begin{frame}[fragile,label=sec-5-1-1]{rCharts}
- \lstset{language=R,label= ,caption= ,numbers=none}
-\begin{lstlisting}
-library(rCharts)
-library(zoo)
-library(lattice)
+\begin{frame}[fragile,label=sec-5-1-1]{googleVis}
+ \href{http://decastillo.github.io/googleVis_Tutorial/}{Tutorial}
 
-load('data/aranjuez.RData')
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+library(googleVis)
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-5-1-2]{Highcharts}
+\begin{frame}[fragile,label=sec-5-1-2]{Ejemplo con datos de Navarra}
  \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
+navarraDF <- as.data.frame(navarra)
+navarraDF <- stack(navarraDF)
+navarraDF$ymd <- index(navarra)
+
+navGVis <- gvisMotionChart(navarraDF,
+                           idvar = 'ind', timevar='ymd')
+
+plot(navGVis)
+\end{lstlisting}
+\end{frame}
+
+\subsection{rCharts}
+\label{sec-5-2}
+
+\begin{frame}[fragile,label=sec-5-2-1]{rCharts}
+ \url{http://ramnathv.github.io/rCharts/} 
+
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+library(rCharts)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,label=sec-5-2-2]{Highcharts}
+ \url{http://www.highcharts.com/}
+
+\lstset{language=R,label= ,caption= ,numbers=none}
+\begin{lstlisting}
 aranjuezDF <- as.data.frame(aranjuez)
-aranjuezDF$tt <- as.numeric(as.POSIXct(index(aranjuez)))*1000
-hp <- hPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
+## Highcharts necesita que las fechas sean numéricas
+aranjuezDF$tt <-
+    as.numeric(as.POSIXct(index(aranjuez)))*1000
+hp <- hPlot(TempAvg ~ tt, data = aranjuezDF,
+            type = 'line')
 hp$xAxis(type = 'datetime')
 hp
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile,label=sec-5-1-3]{Rickshaw}
- NO FUNCIONA :-(
+\begin{frame}[fragile,label=sec-5-2-3]{Morris}
+ \url{http://morrisjs.github.io/morris.js/}
+
 \lstset{language=R,label= ,caption= ,numbers=none}
 \begin{lstlisting}
-rp <- rPlot(TempAvg ~ tt, data = aranjuezDF, type = 'line')
-rp$set(slider = TRUE)
-rp
-\end{lstlisting}
-\end{frame}
-
-
-\begin{frame}[fragile,label=sec-5-1-4]{Morris}
- \lstset{language=R,label= ,caption= ,numbers=none}
-\begin{lstlisting}
-aranjuezDF <- as.data.frame(arannjuez)
-aranjuezDF$tt <- as.character(index(aranjuez))
-mp <- mPlot(x = 'tt', y = c('TempAvg', 'TempMax'), type = 'Line',
-            data = aranjuezDF)
+mp <- mPlot(x = 'tt', y = c('TempAvg', 'TempMax'),
+            data = aranjuezDF,
+            type = 'Line')
+## Ajustes para Morris            
 mp$set(pointSize = 0, lineWidth = 1)
 mp
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[label=sec-5-1-5]{}
+\begin{frame}[label=sec-5-2-4]{}
 
 \end{frame}
 % Emacs 24.3.1 (Org mode 8.2.7c)
